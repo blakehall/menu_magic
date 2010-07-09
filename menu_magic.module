@@ -1,0 +1,111 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * This is an example module to illustrate all the power and magic
+ * available from the Drupal menu system.
+ */
+
+/**
+ * Implementation of hook_menu.
+ */
+function menu_magic_menu() {
+  $items = array();
+  
+  /**
+   * This is a simple callback.
+   *
+   * This will create a path at http://example.com/magic. When visited, that
+   * URL will trigger the "menu_magic_page" function.
+   */
+  $items['magic'] = array(
+    'title' => 'Menu Magic!',
+    'page callback' => 'menu_magic_page',
+    'access callback' => 'menu_magic_page_access',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  
+  /**
+   * Another menu item, this time with arguments and nesting in the menu
+   * hierarchy. 
+   */
+  $items['admin/settings/magic'] = array(
+    'title' => 'Menu Magic Settings',
+    'description' => 'Configure settings for menu magic module',
+    'page callback' => 'menu_magic_admin_page',
+    'access callback' => 'user_access', // Optional
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  
+  /**
+   * User page callback with dynamic wildcard and autoloader.
+   */
+  $items['user/%user/magic'] = array(
+    'title' => 'Magic',
+    'page callback' => 'menu_magic_user_page',
+    'page arguments' => array(1),
+    'access callback' => 'menu_magic_user_access',
+    'access arguments' => array(1),
+    'file' => 'menu_magic.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 5
+  );
+  
+  return $items;
+}
+
+/**
+ * Access callback for menu_magic_page. The current user will only be granted
+ * access to the page 'magic' if this function returns TRUE.
+ */
+function menu_magic_page_access() {
+  global $user;
+  
+  if ($user->uid == 1) {
+    return TRUE;
+  }
+}
+
+/**
+ * Page callback for 'magic'. This is the function that will get called
+ * everytime a user visits http://example.com/magic.
+ */
+function menu_magic_page() {
+  return t('Hello World!');
+}
+
+/**
+ * Page callback for 'admin/settings/magic'. Return the settings form.
+ */
+function menu_magic_admin_page() {
+  return drupal_get_form('menu_magic_admin_settings');
+}
+
+/**
+ * Form definition for 'admin/settings/magic' settings form.
+ */
+function menu_magic_admin_settings() {
+  $form = array();
+  
+  $form['menu_magic_belief'] = array(
+    '#type' => 'radios',
+    '#title' => t('Do you believe in magic?'),
+    '#options' => array(0 => t('No'), 1 => t('Yes')),
+    '#default_value' => variable_get('menu_magic_belief', 1),
+  );
+  
+  return system_settings_form($form);
+}
+
+/**
+ * Access callback for 'user/UID/magic'.
+ */
+function menu_magic_user_access($account) {
+  global $user;
+
+  if (($account->uid == $user->uid) || user_access('administer users')) {
+    return TRUE;
+  }
+}
