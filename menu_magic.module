@@ -38,15 +38,31 @@ function menu_magic_menu() {
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
   );
-  
+
   /**
-   * User page callback with dynamic wildcard and autoloader.
+   * User page callback with dynamic wildcard.
    */
-  $items['user/%user/magic'] = array(
+  $items['user/%/magic'] = array(
     'title' => 'Magic',
     'page callback' => 'menu_magic_user_page',
     'page arguments' => array(1),
-    'access callback' => 'menu_magic_user_access',
+    'access callback' => 'menu_magic_user_page_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 5,
+  );
+
+  /**
+   * User page callback with dynamic wildcard, autoloader, and page split.
+   *
+   * This is exactly the same menu definition as above, but uses some fancy
+   * menu system tricks.
+   */
+  $items['user/%user/magic'] = array(
+    'title' => 'Magic',
+    'page callback' => 'menu_magic_user_lazy_page',
+    'page arguments' => array(1),
+    'access callback' => 'menu_magic_user_lazy_page_access',
     'access arguments' => array(1),
     'file' => 'menu_magic.pages.inc',
     'type' => MENU_LOCAL_TASK,
@@ -102,10 +118,35 @@ function menu_magic_admin_settings() {
 /**
  * Access callback for 'user/UID/magic'.
  */
-function menu_magic_user_access($account) {
+function menu_magic_user_page_access($uid) {
+  global $user;
+
+  // Load the account for the person whose account we're viewing.
+  $account = user_load($uid);
+
+  if (($account->uid == $user->uid) || user_access('administer users')) {
+    return TRUE;
+  }
+}
+
+/**
+ * Page callback for the user tab.
+ */
+function menu_magic_user_page($uid) {
+  // Load the account for the person whose account we're viewing.
+  $account = user_load($uid);
+
+  return t('%name believes in magic!', array('%name' => $account->name));
+}
+
+/**
+ * Access callback for 'user/UID/magic' - autoloader style.
+ */
+function menu_magic_user_lazy_page_access($account) {
   global $user;
 
   if (($account->uid == $user->uid) || user_access('administer users')) {
     return TRUE;
   }
 }
+

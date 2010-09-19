@@ -9,6 +9,6 @@
 /**
  * Page callback for the user tab.
  */
-function menu_magic_user_page($account) {
+function menu_magic_user_lazy_page($account) {
   return t('%name believes in magic!', array('%name' => $account->name));
 }
