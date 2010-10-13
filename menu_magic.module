@@ -42,8 +42,8 @@ function menu_magic_menu() {
   /**
    * User page callback with dynamic wildcard.
    */
-  $items['user/%/magic'] = array(
-    'title' => 'Magic',
+  $items['user/%/magic_1'] = array(
+    'title' => 'Magic 1',
     'page callback' => 'menu_magic_user_page',
     'page arguments' => array(1),
     'access callback' => 'menu_magic_user_page_access',
@@ -58,8 +58,8 @@ function menu_magic_menu() {
    * This is exactly the same menu definition as above, but uses some fancy
    * menu system tricks.
    */
-  $items['user/%user/magic'] = array(
-    'title' => 'Magic',
+  $items['user/%user/magic_2'] = array(
+    'title' => 'Magic 2',
     'page callback' => 'menu_magic_user_lazy_page',
     'page arguments' => array(1),
     'access callback' => 'menu_magic_user_lazy_page_access',
