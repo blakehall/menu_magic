@@ -8,11 +8,11 @@
  */
 
 /**
- * Implementation of hook_menu.
+ * Implements hook_menu().
  */
 function menu_magic_menu() {
   $items = array();
-  
+
   /**
    * This is a simple callback.
    *
@@ -25,10 +25,20 @@ function menu_magic_menu() {
     'access callback' => 'menu_magic_page_access',
     'type' => MENU_NORMAL_ITEM,
   );
-  
+
+  /**
+   * This is a simple callback that returns a renderable instead of just a plain ol' string.
+   */
+  $items['magic2'] = array(
+    'title' => 'Menu Magic!',
+    'page callback' => 'menu_magic_renderable_page',
+    'access callback' => 'menu_magic_page_access',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
   /**
    * Another menu item, this time with arguments and nesting in the menu
-   * hierarchy. 
+   * hierarchy.
    */
   $items['admin/settings/magic'] = array(
     'title' => 'Menu Magic Settings',
@@ -68,7 +78,7 @@ function menu_magic_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 5
   );
-  
+
   return $items;
 }
 
@@ -76,9 +86,10 @@ function menu_magic_menu() {
  * Access callback for menu_magic_page. The current user will only be granted
  * access to the page 'magic' if this function returns TRUE.
  */
+// hook_node_access($node, $op, $account)
 function menu_magic_page_access() {
   global $user;
-  
+
   if ($user->uid == 1) {
     return TRUE;
   }
@@ -93,6 +104,20 @@ function menu_magic_page() {
 }
 
 /**
+ * Page callback for 'magic2'. This is the function that will get called
+ * everytime a user visits http://example.com/magic2. Unlike menu_magic_page
+ * this callback returns a renderable.
+ */
+function menu_magic_renderable_page() {
+  return array(
+    'first_paragraph' => array(
+      '#type' => 'markup',
+      '#markup' => 'Hello World!',
+    ),
+  );
+}
+
+/**
  * Page callback for 'admin/settings/magic'. Return the settings form.
  */
 function menu_magic_admin_page() {
@@ -104,14 +129,14 @@ function menu_magic_admin_page() {
  */
 function menu_magic_admin_settings() {
   $form = array();
-  
+
   $form['menu_magic_belief'] = array(
     '#type' => 'radios',
     '#title' => t('Do you believe in magic?'),
     '#options' => array(0 => t('No'), 1 => t('Yes')),
     '#default_value' => variable_get('menu_magic_belief', 1),
   );
-  
+
   return system_settings_form($form);
 }
 
@@ -149,4 +174,3 @@ function menu_magic_user_lazy_page_access($account) {
     return TRUE;
   }
 }
-

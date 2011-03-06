@@ -1,5 +1,5 @@
 ; $Id$
 name = Menu Magic
 description = The magical Drupal menu system.
-core = 6.x
+core = 7.x
 package = Lullabot Examples
